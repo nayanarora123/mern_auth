@@ -8,12 +8,14 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     const [auth, setAuth] = useState(false);
+    const [currentUser, setCurrentUser] = useState(false);
 
     const login = async (username, password) => {
         const res = await axios.post('http://localhost:5000/api/auth/login', { username, password }, {
             withCredentials: true,
         });
         setAuth(res.data.user._id);
+        setCurrentUser(res.data.user);
     };
 
     const register = async (username, password) => {
@@ -36,6 +38,7 @@ export const AuthProvider = ({ children }) => {
 
             if (data.user) {
                 setAuth(data.user._id);
+                setCurrentUser(data.user);
             }
         } catch (error) {
             if (error.response?.status === 401 && error.response.data.error.name === "TokenExpiredError") {
@@ -52,13 +55,16 @@ export const AuthProvider = ({ children }) => {
 
                     if (retryResponse.data.user) {
                         setAuth(retryResponse.data.user._id);
+                        setCurrentUser(retryResponse.data.user);
                     }
                 } catch (refreshError) {
                     console.log('Error refreshing token:', refreshError);
-                    setAuth(false); // Clear auth state if refresh fails
+                    setAuth(false);
+                    setCurrentUser(false);
                 }
             } else {
-                setAuth(false); // Handle other errors
+                setAuth(false);
+                setCurrentUser(false);
             }
         } finally {
             setLoading(false);
@@ -70,7 +76,7 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ auth, login, register, logout }}>
+        <AuthContext.Provider value={{ auth, login, register, logout, currentUser }}>
             {!loading && children}
         </AuthContext.Provider>
     );

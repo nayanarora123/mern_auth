@@ -130,6 +130,26 @@ exports.refreshToken = async (req, res) => {
 };
 
 
+exports.googleAuthenticateCB = async function (req, res) {
+
+    const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const refreshToken = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+
+    // Save the refresh token in the user's document
+    await User.findByIdAndUpdate(req.user._id, { refreshToken });
+
+    res.cookie('token', token, {
+        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        httpOnly: true
+    });
+    res.cookie('refreshToken', refreshToken, {
+        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        httpOnly: true
+    });
+    res.redirect('http://localhost:3000/');
+}
+
+
 exports.logout = async (req, res) => {
     res.clearCookie('refreshToken');
     res.clearCookie('token');
