@@ -21,7 +21,9 @@ export const AuthProvider = ({ children }) => {
     };
 
     const logout = async () => {
-        await axios.get('http://localhost:5000/api/auth/logout');
+        await axios.get('http://localhost:5000/api/auth/logout', {
+            withCredentials: true, 
+        });        
         setAuth(false);
     }
 
