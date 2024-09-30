@@ -8,7 +8,6 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     const [auth, setAuth] = useState(false);
-    
 
     const login = async (username, password) => {
         const res = await axios.post('http://localhost:5000/api/auth/login', { username, password }, {
@@ -67,8 +66,6 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         authUser();
     }, []);
-    
-
 
     return (
         <AuthContext.Provider value={{ auth, login, register, logout }}>
