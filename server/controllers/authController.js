@@ -151,10 +151,15 @@ exports.googleAuthenticateCB = async function (req, res) {
 
 
 exports.logout = async (req, res) => {
-    res.clearCookie('refreshToken');
-    res.clearCookie('token');
-    res.status(200).json({
-        success: true,
-        message: "Logged Out",
+    req.logout((err) => {
+        if (err) {
+            return res.status(500).json({ message: "Error during logout." });
+        }
+        res.clearCookie('refreshToken');
+        res.clearCookie('token');
+        res.status(200).json({
+            success: true,
+            message: "Logged Out",
+        });
     });
 };
